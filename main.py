@@ -322,7 +322,7 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
 
     embed = discord.Embed(
         title=f"・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
-        description=f":fsdfasdf: ```\n{details}\n```\n **:fsdfasdf: Price : {price if price else '-'}**",
+        description=f"\<:fsdfasdf:1492738036323319828> ```\n{details}\n```\n **\<:fsdfasdf:1492738036323319828> Price : {price if price else '-'}**",
         color=discord.Color.red()
     )
     
