@@ -317,8 +317,8 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
         await interaction.response.send_message(f" <#{ALLOWED_CHANNEL_ID}>", ephemeral=True)
         return
 
-    # To avoid 'Unknown Interaction' error, we defer first
-    await interaction.response.defer(ephemeral=True)
+    # Defer without ephemeral=True so the followup can be public
+    await interaction.response.defer(ephemeral=False)
 
     global order_counter
     current_order_id = order_counter
@@ -338,6 +338,8 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     
     view = OrderView(name, details, image.url if image else None, interaction.user, price, current_order_id)
     allowed_mentions = discord.AllowedMentions(everyone=True)
+    
+    # Sending the followup publicly
     await interaction.followup.send(content="@everyone", embed=embed, view=view, allowed_mentions=allowed_mentions)
 
 @bot.tree.command(name="add", description="إضافة شخص إلى التكت")
