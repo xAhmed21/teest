@@ -205,7 +205,7 @@ class OrderView(discord.ui.View):
 
         order_embed = discord.Embed(
             title="・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
-            description=f"```\n{self.order_details}\n```\n **<:fsdfasdf:1492738036323319828> Price : {self.price if self.price else 'غير محدد'}**",
+            description=f"```\n{self.order_details}\n```\n<:fsdfasdf:1492738036323319828>・Buyer : {self.creator.mention}\n<:fsdfasdf:1492738036323319828>・Price : {self.price if self.price else 'غير محدد'}",
             color=discord.Color.red()
         )
         order_embed.set_image(url=BANNER_URL)
@@ -326,7 +326,7 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
 
     embed = discord.Embed(
         title="・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
-        description=f"```\n{details}\n```\n **<:fsdfasdf:1492738036323319828> Price : {price if price else 'غير محدد'}**",
+        description=f"```\n{details}\n```\n<:fsdfasdf:1492738036323319828>・Buyer : {interaction.user.mention}\n<:fsdfasdf:1492738036323319828>・Price : {price if price else 'غير محدد'}",
         color=discord.Color.red()
     )
     
