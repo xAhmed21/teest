@@ -88,7 +88,7 @@ async def send_transcript(channel: discord.TextChannel, creator: discord.Member,
 
     transcript_channel = channel.guild.get_channel(TRANSCRIPT_CHANNEL_ID)
     if transcript_channel and isinstance(transcript_channel, discord.TextChannel):
-        await transcript_channel.send(f"Transcript for ticket '{channel.name}' (Created by {creator.mention}, Taken by {order_taker.mention}):", file=transcript_file)
+        await transcript_channel.send(f"Transcript for ticket \'{channel.name}\' (Created by {creator.mention}, Taken by {order_taker.mention}):", file=transcript_file)
     else:
         print(f"Error: Transcript channel with ID {TRANSCRIPT_CHANNEL_ID} not found or is not a text channel.")
 
@@ -261,8 +261,8 @@ class OrderView(discord.ui.View):
         btn_close = discord.ui.Button(label="Close", style=discord.ButtonStyle.red)
         btn_close.callback = close_callback
         
-        view.add_item(btn_open)
-        view.add_item(btn_close)
+        view.add_item(btn=btn_open)
+        view.add_item(btn=btn_close)
         
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
@@ -317,6 +317,8 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
         await interaction.response.send_message(f" <#{ALLOWED_CHANNEL_ID}>", ephemeral=True)
         return
 
+    await interaction.response.defer(ephemeral=True) # Defer the interaction immediately
+
     global order_counter
     current_order_id = order_counter
     order_counter += 1
@@ -334,9 +336,7 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     embed.set_footer(text="© Rovel Store")
     
     view = OrderView(name, details, image.url if image else None, interaction.user, price, current_order_id)
-    allowed_mentions = discord.AllowedMentions(everyone=True)
-    await interaction.response.send_message(content="@everyone", embed=embed, view=view, allowed_mentions=allowed_mentions)
-
+    allowed_mentions = discord.AllowedMentions(everyone    await interaction.followup.send(content="@everyone", embed=embed, view=view, allowed_mentions=allowed_mentions)
 @bot.tree.command(name="add", description="إضافة شخص إلى التكت")
 @app_commands.describe(member="الشخص المراد إضافته")
 async def add(interaction: discord.Interaction, member: discord.Member):
