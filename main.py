@@ -88,7 +88,7 @@ async def send_transcript(channel: discord.TextChannel, creator: discord.Member,
 
     transcript_channel = channel.guild.get_channel(TRANSCRIPT_CHANNEL_ID)
     if transcript_channel and isinstance(transcript_channel, discord.TextChannel):
-        await transcript_channel.send(f"Transcript for ticket \'{channel.name}\' (Created by {creator.mention}, Taken by {order_taker.mention}):", file=transcript_file)
+        await transcript_channel.send(f"Transcript for ticket '{channel.name}' (Created by {creator.mention}, Taken by {order_taker.mention}):", file=transcript_file)
     else:
         print(f"Error: Transcript channel with ID {TRANSCRIPT_CHANNEL_ID} not found or is not a text channel.")
 
@@ -177,7 +177,7 @@ class OrderView(discord.ui.View):
         self.price = price
         self.order_id = order_id
 
-    @discord.ui.button(label="Take Order", style=discord.ButtonStyle.red, emoji="🏷️", custom_id="order_button")
+    @discord.ui.button(label="Take Order", style=discord.ButtonStyle.red, emoji="<:fsdfasdf:1492738036323319828>", custom_id="order_button")
     async def order_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id == self.creator.id:
             await interaction.response.send_message("انت صاحب الاوردر يصاحبي هتطلبه ازاي ", ephemeral=True)
@@ -204,8 +204,8 @@ class OrderView(discord.ui.View):
         await interaction.response.send_message(f"تم إنشاء تكت لطلبك: {new_channel.mention}", ephemeral=True)
 
         order_embed = discord.Embed(
-            title=f"・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
-            description=f"\n```\n{self.order_details}\n```\\n **Price:** {self.price if self.price else 'غير محدد'}",
+            title="・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
+            description=f"```\n{self.order_details}\n```\n **<:fsdfasdf:1492738036323319828> Price : {self.price if self.price else 'غير محدد'}**",
             color=discord.Color.red()
         )
         order_embed.set_image(url=BANNER_URL)
@@ -235,7 +235,7 @@ class OrderView(discord.ui.View):
 
         async def open_callback(inter: discord.Interaction):
             for child in self.children:
-                if child.custom_id == "order_button":
+                if isinstance(child, discord.ui.Button):
                     child.disabled = False
             
             orig_embed = interaction.message.embeds[0]
@@ -245,10 +245,11 @@ class OrderView(discord.ui.View):
 
         async def close_callback(inter: discord.Interaction):
             for child in self.children:
-                if child.custom_id == "order_button":
-                    child.disabled = True
-                    child.label = "Delivered"
-                    child.style = discord.ButtonStyle.red
+                if isinstance(child, discord.ui.Button):
+                    if child.custom_id == "order_button":
+                        child.disabled = True
+                        child.label = "Delivered"
+                        child.style = discord.ButtonStyle.red
             
             orig_embed = interaction.message.embeds[0]
             orig_embed.color = discord.Color.red()
@@ -321,8 +322,8 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     order_counter += 1
 
     embed = discord.Embed(
-        title=f"・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
-        description=f"\<:fsdfasdf:1492738036323319828> ```\n{details}\n```\n **\<:fsdfasdf:1492738036323319828> Price : {price if price else '-'}**",
+        title="・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
+        description=f"```\n{details}\n```\n **<:fsdfasdf:1492738036323319828> Price : {price if price else 'غير محدد'}**",
         color=discord.Color.red()
     )
     
