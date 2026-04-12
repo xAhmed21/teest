@@ -11,6 +11,8 @@ import re
 TOKEN = os.getenv("DISCORD_TOKEN")
 ALLOWED_CHANNEL_ID = 1482585820236877994
 CATEGORY_ID = 1487165312247009430
+SECOND_CATEGORY_ID = 1492326279914066051
+CATEGORY_IDS = [CATEGORY_ID, SECOND_CATEGORY_ID]
 TRANSCRIPT_CHANNEL_ID = 1487292108141363271
 DONE_CATEGORY_ID = 1482587038292119634 
 ADMIN_ROLE_ID = 1482585902676181073 
@@ -202,7 +204,7 @@ class OrderView(discord.ui.View):
         await interaction.response.send_message(f"تم إنشاء تكت لطلبك: {new_channel.mention}", ephemeral=True)
 
         order_embed = discord.Embed(
-            title=f"📦 {self.order_name} | @everyone",
+            title=f"📦 {self.order_name}",
             description=f"**📑 Order Details: ↴**\n```\n{self.order_details}\n```\n🏷️ **Order ID:** #{self.order_id}\n👤 **Seller:** {self.creator.mention}\n💰 **Price:** {self.price if self.price else 'غير محدد'}",
             color=discord.Color.red()
         )
@@ -230,8 +232,8 @@ class OrderView(discord.ui.View):
         embed.set_image(url=BANNER_URL)
         
         view = discord.ui.View()
-        
-        async def open_callback(inter):
+
+        async def open_callback(inter: discord.Interaction):
             for child in self.children:
                 if child.custom_id == "order_button":
                     child.disabled = False
@@ -241,7 +243,7 @@ class OrderView(discord.ui.View):
             await interaction.message.edit(embed=orig_embed, view=self)
             await inter.response.send_message("Order has been opened.", ephemeral=True)
 
-        async def close_callback(inter):
+        async def close_callback(inter: discord.Interaction):
             for child in self.children:
                 if child.custom_id == "order_button":
                     child.disabled = True
@@ -319,7 +321,7 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     order_counter += 1
 
     embed = discord.Embed(
-        title=f"📦 {name}  @everyone",
+        title=f"📦 {name}",
         description=f"**📑 Order Details: ↴**\n```\n{details}\n```\n🏷️ **Order ID:** #{current_order_id}\n👤 **Seller:** {interaction.user.mention}\n💰 **Price:** {price if price else '-'}",
         color=discord.Color.red()
     )
@@ -334,17 +336,14 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     allowed_mentions = discord.AllowedMentions(everyone=True)
     await interaction.response.send_message(content="@everyone", embed=embed, view=view, allowed_mentions=allowed_mentions)
 
-# --- Updated /add member command ---
 @bot.tree.command(name="add", description="إضافة شخص إلى التكت")
 @app_commands.describe(member="الشخص المراد إضافته")
 async def add(interaction: discord.Interaction, member: discord.Member):
-    # Check for Access Role
     if not any(role.id == ADMIN_ROLE_ID for role in interaction.user.roles):
         await interaction.response.send_message("عذراً، لا تملك الصلاحية لاستخدام هذا الأمر.", ephemeral=True)
         return
 
-    # Check if channel is in the specific Category
-    if not interaction.channel.category or interaction.channel.category_id != CATEGORY_ID:
+    if not interaction.channel.category or interaction.channel.category_id not in CATEGORY_IDS:
         await interaction.response.send_message("هذا الأمر يعمل فقط داخل الرومات الموجودة في الكاتيجوري المحددة.", ephemeral=True)
         return
 
@@ -354,11 +353,9 @@ async def add(interaction: discord.Interaction, member: discord.Member):
     except Exception as e:
         await interaction.response.send_message(f"حدث خطأ أثناء محاولة إضافة العضو: {e}", ephemeral=True)
 
-# --- Updated /fetch member command ---
 @bot.tree.command(name="fetch", description="إظهار جميع تكتات مستلم الطلب (Order Taker)")
 @app_commands.describe(member="العضو المراد جلب تكتاته")
 async def fetch(interaction: discord.Interaction, member: discord.Member):
-    # Check for Access Role
     if not any(role.id == ADMIN_ROLE_ID for role in interaction.user.roles):
         await interaction.response.send_message("عذراً، لا تملك الصلاحية لاستخدام هذا الأمر.", ephemeral=True)
         return
@@ -368,26 +365,22 @@ async def fetch(interaction: discord.Interaction, member: discord.Member):
     target_user = member
     user_tickets = []
     
-    category = interaction.guild.get_channel(CATEGORY_ID)
-    if not category or not isinstance(category, discord.CategoryChannel):
-        await interaction.followup.send("خطأ: لم يتم العثور على الكاتيجوري المطلوبة.", ephemeral=True)
-        return
+    for category_id in CATEGORY_IDS:
+        category = interaction.guild.get_channel(category_id)
+        if not category or not isinstance(category, discord.CategoryChannel):
+            continue
 
-    for channel in category.text_channels:
-        async for message in channel.history(limit=1, oldest_first=True):
-            # Get all mentions in the message content using regex
-            # Mentions are in format <@ID> or <@!ID>
-            mentions = re.findall(r'<@!?(\d+)>', message.content)
-            
-            # Check if there are at least 2 mentions and the second one is the target user
-            if len(mentions) >= 2:
-                second_mention_id = int(mentions[1])
-                if second_mention_id == target_user.id:
-                    user_tickets.append(channel)
-            break
+        for channel in category.text_channels:
+            async for message in channel.history(limit=1, oldest_first=True):
+                mentions = re.findall(r'<@!?(\d+)>', message.content)
+                if len(mentions) >= 2:
+                    second_mention_id = int(mentions[1])
+                    if second_mention_id == target_user.id:
+                        user_tickets.append(channel)
+                break
 
     if not user_tickets:
-        await interaction.followup.send(f"لا توجد تكتات مستلمة لـ {target_user.mention} في هذه الكاتيجوري.")
+        await interaction.followup.send(f"لا توجد تكتات مستلمة لـ {target_user.mention} في الكاتيجوري المحددة.")
         return
 
     embed = discord.Embed(
@@ -420,4 +413,7 @@ async def on_ready():
     print('------')
 
 if __name__ == "__main__":
-    bot.run(TOKEN)
+    if not TOKEN:
+        print("Error: DISCORD_TOKEN not found in .env file.")
+    else:
+        bot.run(TOKEN)
