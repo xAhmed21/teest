@@ -204,7 +204,7 @@ class OrderView(discord.ui.View):
         await interaction.response.send_message(f"تم إنشاء تكت لطلبك: {new_channel.mention}", ephemeral=True)
 
         order_embed = discord.Embed(
-            title=f"``` {self.order_name}```",
+            title=f"・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
             description=f"\n```\n{self.order_details}\n```\\n **Price:** {self.price if self.price else 'غير محدد'}",
             color=discord.Color.red()
         )
@@ -221,7 +221,7 @@ class OrderView(discord.ui.View):
     @discord.ui.button(label="Settings ", style=discord.ButtonStyle.grey, emoji="🛠️", custom_id="main_settings_button")
     async def main_settings_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if not any(role.id == ADMIN_ROLE_ID for role in interaction.user.roles):
-            await interaction.response.send_message("عذراً، من يملك رتبة الإدارة فقط هو من يمكنه استخدام هذا الزر.", ephemeral=True)
+            await interaction.response.send_message("", ephemeral=True)
             return
 
         embed = discord.Embed(
@@ -321,8 +321,8 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     order_counter += 1
 
     embed = discord.Embed(
-        title=f"**𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓**",
-        description=f"```\n{details}\n```\n **Price : {price if price else '-'}**",
+        title=f"・𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓・",
+        description=f":fsdfasdf: ```\n{details}\n```\n **:fsdfasdf: Price : {price if price else '-'}**",
         color=discord.Color.red()
     )
     
