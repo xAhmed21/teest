@@ -321,8 +321,8 @@ async def neworder(interaction: discord.Interaction, name: str, details: str, im
     order_counter += 1
 
     embed = discord.Embed(
-        title=f"``` {name}```",
-        description=f"```\n{details}\n```\n **Price:** {price if price else '-'}",
+        title=f"**𝐄𝐋𝐓𝐒𝐋𝐄𝐌𝐀𝐓**",
+        description=f"```\n{details}\n```\n **Price : {price if price else '-'}**",
         color=discord.Color.red()
     )
     
