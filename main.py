@@ -151,7 +151,7 @@ class SettingsView(discord.ui.View):
         self.creator = creator
         self.order_taker = order_taker
 
-    @discord.ui.button(label="Staff Access", style=discord.ButtonStyle.grey, emoji="🛠️", custom_id="ticket_settings_button")
+    @discord.ui.button(label="Settings", style=discord.ButtonStyle.grey, emoji="🛠️", custom_id="ticket_settings_button")
     async def ticket_settings_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if not any(role.id == ADMIN_ROLE_ID for role in interaction.user.roles):
             await interaction.response.send_message("عذراً، من يملك رتبة الإدارة فقط هو من يمكنه استخدام هذا الزر.", ephemeral=True)
@@ -204,8 +204,8 @@ class OrderView(discord.ui.View):
         await interaction.response.send_message(f"تم إنشاء تكت لطلبك: {new_channel.mention}", ephemeral=True)
 
         order_embed = discord.Embed(
-            title=f"📦 {self.order_name}",
-            description=f"**📑 Order Details: ↴**\n```\n{self.order_details}\n```\n🏷️ **Order ID:** #{self.order_id}\n👤 **Seller:** {self.creator.mention}\n💰 **Price:** {self.price if self.price else 'غير محدد'}",
+            title=f"``` {self.order_name}```",
+            description=f"\n```\n{self.order_details}\n```\\n **Price:** {self.price if self.price else 'غير محدد'}",
             color=discord.Color.red()
         )
         order_embed.set_image(url=BANNER_URL)
@@ -218,7 +218,7 @@ class OrderView(discord.ui.View):
         mentions = f"{self.creator.mention} {interaction.user.mention}"
         await new_channel.send(content=mentions, embed=order_embed, view=settings_view)
 
-    @discord.ui.button(label="Staff Access", style=discord.ButtonStyle.grey, emoji="🛠️", custom_id="main_settings_button")
+    @discord.ui.button(label="Settings ", style=discord.ButtonStyle.grey, emoji="🛠️", custom_id="main_settings_button")
     async def main_settings_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if not any(role.id == ADMIN_ROLE_ID for role in interaction.user.roles):
             await interaction.response.send_message("عذراً، من يملك رتبة الإدارة فقط هو من يمكنه استخدام هذا الزر.", ephemeral=True)
