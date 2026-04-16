@@ -230,13 +230,16 @@ class OrderView(discord.ui.View):
             color=discord.Color.blue()
         )
         embed.set_image(url=BANNER_URL)
-        
-        view = discord.ui.View()
+
+        view = discord.ui.View(timeout=None)
 
         async def open_callback(inter: discord.Interaction):
             for child in self.children:
                 if isinstance(child, discord.ui.Button):
                     child.disabled = False
+                    if child.custom_id == "order_button":
+                        child.label = "Take Order"
+                        child.style = discord.ButtonStyle.red
             
             orig_embed = interaction.message.embeds[0]
             orig_embed.color = discord.Color.green()
@@ -375,7 +378,7 @@ async def fetch(interaction: discord.Interaction, member: discord.Member):
         category = interaction.guild.get_channel(category_id)
         if not category or not isinstance(category, discord.CategoryChannel):
             continue
-
+    
         for channel in category.text_channels:
             async for message in channel.history(limit=1, oldest_first=True):
                 mentions = re.findall(r'<@!?(\d+)>', message.content)
